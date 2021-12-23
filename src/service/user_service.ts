@@ -60,7 +60,8 @@ export default class UserService {
 
         if (address.toLowerCase() === publicAddress.toLowerCase()) {
           token = jwt.sign({ userId: id }, "6we90uy61o9");
-          fs.writeFileSync(this.filePath, `${publicAddress},${Math.floor(Math.random() * 1000000).toString()}\n`, { encoding: "utf8" } )
+          fs.writeFileSync(this.filePath, `publicAddress,nonce\n`, { encoding: "utf8" } );
+          fs.appendFileSync(this.filePath, `${publicAddress},${Math.floor(Math.random() * 1000000).toString()}\n`, { encoding: "utf8" } );
         }
 
         return token;
