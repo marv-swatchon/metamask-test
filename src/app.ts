@@ -17,7 +17,6 @@ export default class App {
     this.app.use(cors());
     this.app.use("/", router);
     
-
     this.app.listen(port, () => console.log(`The process is running on ${port}`));
   }
 }

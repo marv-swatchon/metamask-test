@@ -15,7 +15,12 @@ userRouter.post("/login", (req: express.Request, res: express.Response, next: ex
   const publicAddress = req.body.publicAddress;
   const signature = req.body.signature;
 
-  res.send({ publicAddress, signature });
+  const token = userService.login(publicAddress, signature);
+  if (token !== "") {
+    res.send({ token });
+  } else {
+    res.status(400).send("Invalid Parameters");
+  }
 });
 
 export default userRouter;
