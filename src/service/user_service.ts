@@ -1,5 +1,5 @@
 import fs from "fs";
-import ethUtil from "ethereumjs-util";
+import * as ethUtil from "ethereumjs-util";
 import jwt from "jsonwebtoken";
 
 export default class UserService {
@@ -45,26 +45,32 @@ export default class UserService {
       if (row[0] === publicAddress) {
         id = parseInt(index);
 
-        const msg = `${row[1]}`;
-        const msgBuffer = ethUtil.toBuffer(msg);
-        const msgHash = ethUtil.hashPersonalMessage(msgBuffer);
-        const sigParams = ethUtil.fromRpcSig(signature);
-        const publicKey = ethUtil.ecrecover(
-          msgHash,
-          sigParams.v,
-          sigParams.r,
-          sigParams.s
-        );
-        const addressBuffer = ethUtil.publicToAddress(publicKey);
-        const address = ethUtil.bufferToHex(addressBuffer);
+        try {
+          const msg = `${row[1]}`;
+          // const msgBuffer = ethUtil.toBuffer(msg);
+          const msgBuffer = Buffer.from(msg);
+          const msgHash = ethUtil.hashPersonalMessage(msgBuffer);
+          
+          const sigParams = ethUtil.fromRpcSig(signature);
+          const publicKey = ethUtil.ecrecover(
+            msgHash,
+            sigParams.v,
+            sigParams.r,
+            sigParams.s
+          );
+          const addressBuffer = ethUtil.publicToAddress(publicKey);
+          const address = ethUtil.bufferToHex(addressBuffer);
+  
+          if (address.toLowerCase() === publicAddress.toLowerCase()) {
+            token = jwt.sign({ userId: id }, "6we90uy61o9");
+            fs.writeFileSync(this.filePath, `publicAddress,nonce\n`, { encoding: "utf8" } );
+            fs.appendFileSync(this.filePath, `${publicAddress},${Math.floor(Math.random() * 1000000).toString()}\n`, { encoding: "utf8" } );
+          }
 
-        if (address.toLowerCase() === publicAddress.toLowerCase()) {
-          token = jwt.sign({ userId: id }, "6we90uy61o9");
-          fs.writeFileSync(this.filePath, `publicAddress,nonce\n`, { encoding: "utf8" } );
-          fs.appendFileSync(this.filePath, `${publicAddress},${Math.floor(Math.random() * 1000000).toString()}\n`, { encoding: "utf8" } );
+          return token;
+        } catch (error) {
+          console.log(error);
         }
-
-        return token;
       }
     }
   }
