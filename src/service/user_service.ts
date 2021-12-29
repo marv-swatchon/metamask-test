@@ -45,7 +45,7 @@ export default class UserService {
       if (row[0] === publicAddress) {
         id = parseInt(index);
 
-        const msg = `Please sign me in! ${row[1]}`;
+        const msg = `${row[1]}`;
         const msgBuffer = ethUtil.toBuffer(msg);
         const msgHash = ethUtil.hashPersonalMessage(msgBuffer);
         const sigParams = ethUtil.fromRpcSig(signature);
