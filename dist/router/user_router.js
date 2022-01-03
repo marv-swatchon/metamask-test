@@ -15,7 +15,13 @@ userRouter.post("/nonce", (req, res, next) => {
 userRouter.post("/login", (req, res, next) => {
     const publicAddress = req.body.publicAddress;
     const signature = req.body.signature;
-    res.send({ publicAddress, signature });
+    const token = userService.login(publicAddress, signature);
+    if (token !== "") {
+        res.send({ token });
+    }
+    else {
+        res.status(400).send("Invalid Parameters");
+    }
 });
 exports.default = userRouter;
 //# sourceMappingURL=user_router.js.map
